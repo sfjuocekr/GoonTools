@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: GoonTools
+## Notes: Goon Squad approved useless additions
+## Author: sfjuocekr
+## Version: 0.0.1
+## SavedVariables: GoonToolsDB
+
+embeds.xml
+
+GoonTools.lua
