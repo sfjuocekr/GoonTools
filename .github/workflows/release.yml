@@ -20,7 +20,7 @@ jobs:
 
       - name: Create ZIP archive
         run: |
-          zip -r "${RUNNER_TEMP}/source.zip" . \
+          zip -r "${RUNNER_TEMP}/GoonTools-${GITHUB_REF_NAME}.zip" . \
             -x '*/.git*' '.git*' \
             -x '*/.git*/**' '.git*/**'
 
@@ -29,6 +29,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${GITHUB_REF_NAME}" \
-            "${RUNNER_TEMP}/source.zip" \
+            "${RUNNER_TEMP}/GoonTools-${GITHUB_REF_NAME}.zip" \
             --title "${GITHUB_REF_NAME}" \
             --generate-notes
