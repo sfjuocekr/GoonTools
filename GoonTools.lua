@@ -58,7 +58,7 @@ function GoonTools:OnChatMsgWhisper(_, text, playerName, _, _, _, _, _, _, _, _,
     if not GoonTools:GetWhisperInvite() then
         return
     end
-    
+
     if UnitName("player") == playerName then
         return
     end
