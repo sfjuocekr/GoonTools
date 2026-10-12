@@ -8,3 +8,4 @@
 embeds.xml
 
 GoonTools.lua
+GoonToolsUI.lua

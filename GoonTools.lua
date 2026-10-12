@@ -12,6 +12,8 @@ local inviteKeywords = {
 
 
 function GoonTools:OnInitialize()
+    GoonTools:InitializeUI()
+
     self:RegisterEvent("PLAYER_LEVEL_UP", "OnPlayerLevelUp")
     self:RegisterEvent("PARTY_INVITE_REQUEST", "OnPartyInviteRequest")
     self:RegisterEvent("CHAT_MSG_WHISPER", "OnChatMsgWhisper")
@@ -19,7 +21,9 @@ end
 
 
 function GoonTools:OnPlayerLevelUp(_, level)
-    --SendChatMessage("DING LEVEL: " .. level, "GUILD")
+    if not GoonTools:GetDingScreenshot() then
+        return
+    end
 
     C_Timer.After(2, function()
         Screenshot()
@@ -28,7 +32,9 @@ end
 
 
 function GoonTools:OnPartyInviteRequest(_, name, _, _, _, _, _, inviterGUID)
-    --self:Print("Got invite: " .. name .. " " .. inviterGUID)
+    if not GoonTools:GetPartyInvite() then
+        return
+    end
 
     if not IsGuildMember(inviterGUID) then
         return
@@ -38,8 +44,6 @@ function GoonTools:OnPartyInviteRequest(_, name, _, _, _, _, _, inviterGUID)
         local popup = _G["StaticPopup" .. i]
 
         if popup and popup:IsShown() then
-            --self:Print("Popup " .. i .. ": " .. tostring(popup.which))
-
             if popup.which == "PARTY_INVITE" then
                 _G["StaticPopup" .. i .. "Button1"]:Click()
 
@@ -50,24 +54,11 @@ function GoonTools:OnPartyInviteRequest(_, name, _, _, _, _, _, inviterGUID)
 end
 
 
---[[function GoonTools:OnChatMsgWhisper(_, text, playerName, _, _, _, _, _, _, _, _, _, guid)
-    --self:Print("Got whisper: " .. playerName .. " " .. guid)
-
-    if UnitName("player") == playerName then
-        return
-    end
-
-    if not IsGuildMember(guid) then
-        return
-    end
-
-    if text:lower():match("^%s*inv%s*$") then
-        C_PartyInfo.InviteUnit(playerName)
-    end
-end]]--
-
-
 function GoonTools:OnChatMsgWhisper(_, text, playerName, _, _, _, _, _, _, _, _, _, guid)
+    if not GoonTools:GetWhisperInvite() then
+        return
+    end
+    
     if UnitName("player") == playerName then
         return
     end
