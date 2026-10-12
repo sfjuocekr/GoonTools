@@ -21,8 +21,8 @@ jobs:
       - name: Create ZIP archive
         run: |
           zip -r "${RUNNER_TEMP}/source.zip" . \
-            -x "./.git" "./.git/*" \
-               "*/.git" "*/.git/*"
+            -x '*/.git*' '.git*' \
+            -x '*/.git*/**' '.git*/**'
 
       - name: Create GitHub Release
         env:
