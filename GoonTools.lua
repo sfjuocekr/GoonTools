@@ -15,6 +15,10 @@ local guildLevels = {}
 
 
 function GoonTools:OnInitialize()
+    self:RegisterEvent("PLAYER_LOGIN", "OnPlayerLogin")
+end
+
+function GoonTools:OnPlayerLogin()
     if IsInGuild() then
         GoonTools:InitializeUI()
 
@@ -30,6 +34,8 @@ function GoonTools:OnInitialize()
         self:RegisterEvent("CHAT_MSG_WHISPER", "OnChatMsgWhisper")
         self:RegisterEvent("GUILD_ROSTER_UPDATE", "OnGuildRosterUpdate")
     end
+
+    self:UnregisterEvent("PLAYER_LOGIN")
 end
 
 
