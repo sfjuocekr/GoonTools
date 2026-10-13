@@ -4,6 +4,7 @@ local GoonTools = GoonTools
 local defaults = {
     profile = {
         dingScreenshot = true,
+        gratzGuild = false,
         partyInvite = true,
         whisperInvite = true,
     },
@@ -12,7 +13,7 @@ local defaults = {
 
 local options = {
     type = "group",
-    name = "GoonTools",
+    name = "GoonTools Configuration",
     args = {
         featuresConfig = {
             type = "group",
@@ -32,6 +33,20 @@ local options = {
 
                     set = function(_, value)
                         GoonTools:SetDingScreenshot(value)
+                    end,
+                },
+                gratzGuild = {
+                    type = "toggle",
+                    name = "Gratz!",
+                    desc = "Congratulate a guild member reaching the next level.",
+                    order = 2,
+
+                    get = function()
+                        return GoonTools:GetGratzGuild()
+                    end,
+
+                    set = function(_, value)
+                        GoonTools:SetGratzGuild(value)
                     end,
                 },
             },
@@ -84,6 +99,15 @@ function GoonTools:SetDingScreenshot(value)
 end
 
 
+function GoonTools:GetGratzGuild()
+    return self.db.profile.gratzGuild
+end
+
+function GoonTools:SetGratzGuild(value)
+    self.db.profile.gratzGuild = value
+end
+
+
 function GoonTools:GetPartyInvite()
     return self.db.profile.partyInvite
 end
@@ -112,14 +136,14 @@ function GoonTools:InitializeUI()
     local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
     AceConfig:RegisterOptionsTable(
-        "GoonTools",
+        "GoonTools Configuration",
         options,
 	{"gtc"}
     )
 
     self.optionsFrame = AceConfigDialog:AddToBlizOptions(
-        "GoonTools",
-        "GoonTools Configuration"
+        "GoonTools Configuration",
+        "GoonTools"
     )
 end
 

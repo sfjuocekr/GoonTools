@@ -11,12 +11,25 @@ local inviteKeywords = {
 }
 
 
-function GoonTools:OnInitialize()
-    GoonTools:InitializeUI()
+local guildLevels = {}
 
-    self:RegisterEvent("PLAYER_LEVEL_UP", "OnPlayerLevelUp")
-    self:RegisterEvent("PARTY_INVITE_REQUEST", "OnPartyInviteRequest")
-    self:RegisterEvent("CHAT_MSG_WHISPER", "OnChatMsgWhisper")
+
+function GoonTools:OnInitialize()
+    if IsInGuild() then
+        GoonTools:InitializeUI()
+
+        local numMembers = GetNumGuildMembers()
+
+        for i = 1, numMembers do
+            local name, _, _, level, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+            guildLevels[guid] = level
+        end
+
+        self:RegisterEvent("PLAYER_LEVEL_UP", "OnPlayerLevelUp")
+        self:RegisterEvent("PARTY_INVITE_REQUEST", "OnPartyInviteRequest")
+        self:RegisterEvent("CHAT_MSG_WHISPER", "OnChatMsgWhisper")
+        self:RegisterEvent("GUILD_ROSTER_UPDATE", "OnGuildRosterUpdate")
+    end
 end
 
 
@@ -78,3 +91,45 @@ function GoonTools:OnChatMsgWhisper(_, text, playerName, _, _, _, _, _, _, _, _,
     end
 end
 
+
+function GoonTools:OnGuildRosterUpdate()
+    if not GoonTools:GetGratzGuild() then
+        return
+    end
+
+    local numMembers = GetNumGuildMembers()
+
+    for i = 1, numMembers do
+        local name, _, _, level, _, _, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+        local previousLevel = guildLevels[guid]
+
+        if isOnline then
+            if previousLevel then
+                if level > previousLevel then
+                    self:Print("Dinged: " .. name .. " " .. previousLevel .. " " .. level .. " " .. tostring(isOnline))
+
+                    if not UnitIsPlayer(name) then
+                        C_ChatInfo.SendChatMessage("Grats " .. name .. "!", "GUILD")
+                    end
+
+                    guildLevels[guid] = level
+                end
+            else
+                self:Print("Adding: " .. name .. " " .. " " .. level .. " " .. tostring(isOnline))
+
+                guildLevels[guid] = level
+            end
+        end
+    end
+end
+
+
+function GoonTools:DumpLevels(value)
+    for guid, level in pairs(guildLevels) do
+        local localizedClass, englishClass, localizedRace, englishRace, sex, name, realmName = GetPlayerInfoByGUID(guid)
+
+        if name == value or value == nil then
+            self:Print(name .. " " .. guid .. " " .. level)
+        end
+    end
+end
