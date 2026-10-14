@@ -166,3 +166,7 @@ end)
 GoonTools:RegisterChatCommand("gl", function()
     C_PartyInfo.SetLootMethod(Enum.LootMethod.GroupLoot)
 end)
+
+GoonTools:RegisterChatCommand("pl", function()
+    C_PartyInfo.LeaveParty()
+end)
