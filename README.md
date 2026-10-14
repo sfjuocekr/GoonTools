@@ -8,8 +8,8 @@ The official Goon Squad addon
 - Congratulate a guild member when it, they, she or he reaches the next level!
 
 # Slash commands
-/gt	Open GoonTools Configuration!
-/ffa	Set loot to Free For All.
-/gl	Set loot to Group Loot.
-/pl	Leave the current party.
+- /gt	Open GoonTools Configuration!
+- /ffa	Set loot to Free For All.
+- /gl	Set loot to Group Loot.
+- /pl	Leave the current party.
 
