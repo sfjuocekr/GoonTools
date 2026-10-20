@@ -12,11 +12,20 @@ local inviteKeywords = {
 
 
 local guildLevels = {}
+local playerGUID = UnitGUID("player")
 
 
 function GoonTools:OnInitialize()
     self:RegisterEvent("PLAYER_LOGIN", "OnPlayerLogin")
 end
+
+function IsRestricted()
+    local inInstance, instanceType = IsInInstance()
+    local isPvP = inInstance and instanceType == "pvp"
+
+    return IsEncounterInProgress() or isPvP
+end
+
 
 function GoonTools:OnPlayerLogin()
     if IsInGuild() then
@@ -55,7 +64,7 @@ function GoonTools:OnPartyInviteRequest(_, name, _, _, _, _, _, inviterGUID)
         return
     end
 
-    if not IsGuildMember(inviterGUID) then
+    if not IsGuildMember(inviterGUID) and self.db.profile.guildPartyInvite then
         return
     end
 
@@ -74,15 +83,19 @@ end
 
 
 function GoonTools:OnChatMsgWhisper(_, text, playerName, _, _, _, _, _, _, _, _, _, guid)
+    if issecretvalue(text) or issecretvalue(playerName) or IsRestricted() then
+        return
+    end
+
     if not GoonTools:GetWhisperInvite() then
         return
     end
 
-    if UnitName("player") == playerName then
+    if guid == playerGUID then
         return
     end
 
-    if not IsGuildMember(guid) then
+    if not IsGuildMember(guid) and self.db.profile.guildWhisperInvite then
         return
     end
 
