@@ -4,7 +4,11 @@ local GoonTools = LibStub("AceAddon-3.0"):GetAddon("GoonTools")
 function GoonTools:PLAYER_LOGIN()
     self:UnregisterEvent("PLAYER_LOGIN")
 
-    if IsInGuild() then
+    self.playerGUID = UnitGUID("player")
+
+    GoonTools:SetupGoonToolsEvents()
+
+    --[[if IsInGuild() then
         local numMembers = GetNumGuildMembers()
 
         for i = 1, numMembers do
@@ -12,14 +16,7 @@ function GoonTools:PLAYER_LOGIN()
             guildMembers[guid].name = name
             guildMembers[guid].level = level
         end
-
-
-        self:RegisterEvent("GUILD_ROSTER_UPDATE")
-    end
-
-    self:RegisterEvent("PARTY_INVITE_REQUEST")
-    self:RegisterEvent("CHAT_MSG_WHISPER")
-    self:RegisterEvent("PLAYER_LEVEL_UP")
+    end]]
 end
 
 
@@ -71,7 +68,7 @@ function GoonTools:CHAT_MSG_WHISPER(_, text, playerName, _, _, _, _, _, _, _, _,
     end
 
 
-    if guid == playerGUID then
+    if guid == self.playerGUID then
         return
     end
 
@@ -86,7 +83,34 @@ function GoonTools:CHAT_MSG_WHISPER(_, text, playerName, _, _, _, _, _, _, _, _,
 end
 
 
+function GoonTools:PLAYER_GUILD_UPDATE()
+    self:SetupGoonToolsEvents()
+end
+
+
 function GoonTools:GUILD_ROSTER_UPDATE()
+    if IsRestricted() then
+        return
+    end
+
+    if self.rosterInitialized then
+        -- Check roster for changes, defer updating levels.
+        self:UpdateGuildRoster()
+
+        -- Check members if they leveled up
+        self:CheckLevelUp()
+
+        -- Broadcast registration
+        self:SendCommMessage(
+            "GT_REG",
+            self.playerGUID,
+            "GUILD"
+        )
+    else
+        self:InitializeRoster()
+    end
+    
+    --[[
     if not GoonTools:GetGratzGuild() then
         return
     end
@@ -114,5 +138,48 @@ function GoonTools:GUILD_ROSTER_UPDATE()
                 guildMembers[guid] = level
             end
         end
+    end]]
+end
+
+
+function GoonTools:SetupGoonToolsEvents()
+    self:RegisterEvent("PLAYER_GUILD_UPDATE")
+    self:RegisterEvent("PARTY_INVITE_REQUEST")
+    self:RegisterEvent("CHAT_MSG_WHISPER")
+    self:RegisterEvent("PLAYER_LEVEL_UP")
+
+    if IsInGuild() then
+        self:CreateEvents()
+    else
+        self:DestroyEvents()
+    end
+end
+
+
+function GoonTools:CreateEvents()
+    self:RegisterEvent("GUILD_ROSTER_UPDATE")
+    self:RegisterComm("GT_REG", "OnGoonToolsRegister")
+end
+
+
+function GoonTools:DestroyEvents()
+    self:UnregisterEvent("GUILD_ROSTER_UPDATE")
+    self:UnegisterComm("GT_REG")
+end
+
+
+function GoonTools:OnCommReceived(...)
+    self:Print("OnCommReceived")
+
+    for i = 1, select("#", ...) do
+        local value = select(i, ...)
+        self:Print(i .. ": " .. tostring(value))
+    end
+end
+
+
+function GoonTools:OnGoonToolsRegister(_, guid)
+    if self.rosterInitialized then
+        self.guildMembers[guid].addon = true
     end
 end

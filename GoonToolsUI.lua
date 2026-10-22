@@ -1,4 +1,4 @@
-local GoonTools = GoonTools
+local GoonTools = LibStub("AceAddon-3.0"):GetAddon("GoonTools")
 
 
 local defaults = {
@@ -9,6 +9,9 @@ local defaults = {
         guildPartyInvite = true,
         whisperInvite = true,
         guildWhisperInvite = true,
+    },
+    global = {
+        zoneNames = {},
     },
 }
 
@@ -198,6 +201,8 @@ function GoonTools:InitializeUI()
         "GoonTools Configuration",
         "GoonTools"
     )
+
+    self.zoneNames = self.db.global.zoneNames
 end
 
 
