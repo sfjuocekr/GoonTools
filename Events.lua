@@ -98,8 +98,6 @@ function GoonTools:GUILD_ROSTER_UPDATE()
     end
 
     if self.rosterInitialized then
-        self:RegisterComm("GT_REG", "OnGoonToolsRegister")
-
         -- Check roster for changes, defer updating levels.
         self:UpdateGuildRoster()
 
@@ -115,7 +113,7 @@ function GoonTools:GUILD_ROSTER_UPDATE()
     else
         self:InitializeRoster()
     end
-    
+
     --[[
     if not GoonTools:GetGratzGuild() then
         return
@@ -170,6 +168,8 @@ function GoonTools:CreateGuildEvents()
 
         self:RegisterEvent("GUILD_ROSTER_UPDATE")
         self:RegisterComm("GT_REG", "OnGoonToolsRegister")
+
+        registeredEvents = true
     end
 end
 
@@ -180,6 +180,8 @@ function GoonTools:DestroyGuildEvents()
 
         self:UnregisterEvent("GUILD_ROSTER_UPDATE")
         self:UnregisterComm("GT_REG")
+
+        registeredEvents = false
     end
 end
 
