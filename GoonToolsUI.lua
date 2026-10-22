@@ -194,7 +194,7 @@ function GoonTools:InitializeUI()
     AceConfig:RegisterOptionsTable(
         "GoonTools Configuration",
         options,
-	{"gtc"}
+	    {"gtc"}
     )
 
     self.optionsFrame = AceConfigDialog:AddToBlizOptions(
@@ -206,16 +206,15 @@ function GoonTools:InitializeUI()
 end
 
 
-function GoonTools:HandleSlashCommand(input)
+GoonTools:RegisterChatCommand("gt", function(input)
     if input == "" then
-        Settings.OpenToCategory(self.optionsFrame.name)
+        Settings.OpenToCategory(GoonTools.optionsFrame.name)
 
         return
+    else
+        GoonTools:HandleSlashCommand(input)
     end
-end
-
-
-GoonTools:RegisterChatCommand("gt", "HandleSlashCommand")
+end)
 
 GoonTools:RegisterChatCommand("ffa", function()
     C_PartyInfo.SetLootMethod(Enum.LootMethod.Freeforall)

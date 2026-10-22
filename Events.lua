@@ -67,13 +67,11 @@ function GoonTools:CHAT_MSG_WHISPER(_, text, playerName, _, _, _, _, _, _, _, _,
         return
     end
 
-
     if guid == self.playerGUID then
         return
     end
 
-
-    for _, keyword in ipairs(inviteKeywords) do
+    for _, keyword in ipairs(self.inviteKeywords) do
         if keyword == GetKeyword(text) then
             C_PartyInfo.InviteUnit(playerName)
 

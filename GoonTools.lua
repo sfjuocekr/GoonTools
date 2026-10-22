@@ -6,13 +6,13 @@ local GoonTools = LibStub("AceAddon-3.0"):NewAddon(
 )
 
 
-local inviteKeywords = {
+GoonTools.inviteKeywords = {
     "inv",
     "invite",
 }
 
 
-local guildMessages = {
+GoonTools.guildMessages = {
     joined = {
         "%n just joined the guild!",
         "%n has joined the guild",
@@ -41,6 +41,12 @@ function GoonTools:OnInitialize()
     GoonTools:InitializeUI()
 
     self:RegisterEvent("PLAYER_LOGIN")
+end
+
+
+function GoonTools:HandleSlashCommand(input)
+    -- Handle possible commands fed to /gt
+    self:Print(input)
 end
 
 
