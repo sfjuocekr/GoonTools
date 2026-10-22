@@ -38,6 +38,8 @@ GoonTools.playerGUID = nil
 
 
 function GoonTools:OnInitialize()
+    self:Print("OnInitialize")
+
     GoonTools:InitializeUI()
 
     self:RegisterEvent("PLAYER_LOGIN")
@@ -66,6 +68,10 @@ end
 function GoonTools:InitializeRoster()
     local numMembers = GetNumGuildMembers()
 
+    if numMembers == 0 then -- TODO: why does this happen at first login?
+        return
+    end
+
     for i = 1, numMembers do
         local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
 
@@ -74,7 +80,7 @@ function GoonTools:InitializeRoster()
             self:HandleZoneNames(zone)
         end
 
-        if guid and (level > 0) then
+        if guid  then
             self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone)
         end
     end
@@ -84,8 +90,10 @@ end
 
 
 function GoonTools:UpdateGuildRoster()
+    self:Print("UpdateGuildRoster")
 end
 
 
 function GoonTools:CheckLevelUp()
+    self:Print("CheckLevelUp")
 end

@@ -1,5 +1,7 @@
 local GoonTools = LibStub("AceAddon-3.0"):GetAddon("GoonTools")
 
+local registeredEvents = false
+
 
 function GoonTools:PLAYER_LOGIN()
     self:UnregisterEvent("PLAYER_LOGIN")
@@ -82,16 +84,22 @@ end
 
 
 function GoonTools:PLAYER_GUILD_UPDATE()
+    self:Print("PLAYER_GUILD_UPDATE")
+
     self:SetupGoonToolsEvents()
 end
 
 
 function GoonTools:GUILD_ROSTER_UPDATE()
+    self:Print("GUILD_ROSTER_UPDATE: " .. tostring(self.rosterInitialized))
+
     if IsRestricted() then
         return
     end
 
     if self.rosterInitialized then
+        self:RegisterComm("GT_REG", "OnGoonToolsRegister")
+
         -- Check roster for changes, defer updating levels.
         self:UpdateGuildRoster()
 
@@ -141,28 +149,38 @@ end
 
 
 function GoonTools:SetupGoonToolsEvents()
+    self:Print("SetupGoonToolsEvents:" .. tostring(IsInGuild()))
+
     self:RegisterEvent("PLAYER_GUILD_UPDATE")
     self:RegisterEvent("PARTY_INVITE_REQUEST")
     self:RegisterEvent("CHAT_MSG_WHISPER")
     self:RegisterEvent("PLAYER_LEVEL_UP")
 
     if IsInGuild() then
-        self:CreateEvents()
+        self:CreateGuildEvents()
     else
-        self:DestroyEvents()
+        self:DestroyGuildEvents()
     end
 end
 
 
-function GoonTools:CreateEvents()
-    self:RegisterEvent("GUILD_ROSTER_UPDATE")
-    self:RegisterComm("GT_REG", "OnGoonToolsRegister")
+function GoonTools:CreateGuildEvents()
+    if not registeredEvents then
+        self:Print("CreateGuildEvents")
+
+        self:RegisterEvent("GUILD_ROSTER_UPDATE")
+        self:RegisterComm("GT_REG", "OnGoonToolsRegister")
+    end
 end
 
 
-function GoonTools:DestroyEvents()
-    self:UnregisterEvent("GUILD_ROSTER_UPDATE")
-    self:UnegisterComm("GT_REG")
+function GoonTools:DestroyGuildEvents()
+    if registeredEvents then
+        self:Print("DestroyGuildEvents")
+
+        self:UnregisterEvent("GUILD_ROSTER_UPDATE")
+        self:UnregisterComm("GT_REG")
+    end
 end
 
 
@@ -177,7 +195,9 @@ end
 
 
 function GoonTools:OnGoonToolsRegister(_, guid)
-    if self.rosterInitialized then
+    self:Print("OnGoonToolsRegister")
+
+    if guid and self.rosterInitialized then
         self.guildMembers[guid].addon = true
     end
 end
