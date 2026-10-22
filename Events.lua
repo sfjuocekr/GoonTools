@@ -113,36 +113,6 @@ function GoonTools:GUILD_ROSTER_UPDATE()
     else
         self:InitializeRoster()
     end
-
-    --[[
-    if not GoonTools:GetGratzGuild() then
-        return
-    end
-
-    local numMembers = GetNumGuildMembers()
-
-    for i = 1, numMembers do
-        local name, _, _, level, _, _, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
-        local previousLevel = guildMembers[guid]
-
-        if isOnline then
-            if previousLevel then
-                if level > previousLevel then
-                    self:Print("Dinged: " .. name .. " " .. previousLevel .. " " .. level .. " " .. tostring(isOnline))
-
-                    if not UnitIsPlayer(name) then
-                        C_ChatInfo.SendChatMessage("Grats " .. name .. "!", "GUILD")
-                    end
-
-                    guildMembers[guid] = level
-                end
-            else
-                self:Print("Adding: " .. name .. " " .. " " .. level .. " " .. tostring(isOnline))
-
-                guildMembers[guid] = level
-            end
-        end
-    end]]
 end
 
 
@@ -167,6 +137,8 @@ function GoonTools:CreateGuildEvents()
         self:Print("CreateGuildEvents")
 
         self:RegisterEvent("GUILD_ROSTER_UPDATE")
+
+        -- TODO: Why is this not registered when a player has just joined a guild?
         self:RegisterComm("GT_REG", "OnGoonToolsRegister")
 
         registeredEvents = true
@@ -179,6 +151,7 @@ function GoonTools:DestroyGuildEvents()
         self:Print("DestroyGuildEvents")
 
         self:UnregisterEvent("GUILD_ROSTER_UPDATE")
+
         self:UnregisterComm("GT_REG")
 
         registeredEvents = false

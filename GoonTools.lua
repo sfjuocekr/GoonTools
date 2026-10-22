@@ -96,4 +96,34 @@ end
 
 function GoonTools:CheckLevelUp()
     self:Print("CheckLevelUp")
+
+    --[[
+    if not GoonTools:GetGratzGuild() then
+        return
+    end
+
+    local numMembers = GetNumGuildMembers()
+
+    for i = 1, numMembers do
+        local name, _, _, level, _, _, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+        local previousLevel = guildMembers[guid]
+
+        if isOnline then
+            if previousLevel then
+                if level > previousLevel then
+                    self:Print("Dinged: " .. name .. " " .. previousLevel .. " " .. level .. " " .. tostring(isOnline))
+
+                    if not UnitIsPlayer(name) then
+                        C_ChatInfo.SendChatMessage("Grats " .. name .. "!", "GUILD")
+                    end
+
+                    guildMembers[guid] = level
+                end
+            else
+                self:Print("Adding: " .. name .. " " .. " " .. level .. " " .. tostring(isOnline))
+
+                guildMembers[guid] = level
+            end
+        end
+    end]]
 end
