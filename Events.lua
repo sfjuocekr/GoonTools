@@ -1,6 +1,8 @@
 local GoonTools = LibStub("AceAddon-3.0"):GetAddon("GoonTools")
 
+
 local registeredEvents = false
+local registeredComms = false
 
 
 function GoonTools:PLAYER_LOGIN()
@@ -9,16 +11,6 @@ function GoonTools:PLAYER_LOGIN()
     self.playerGUID = UnitGUID("player")
 
     GoonTools:SetupGoonToolsEvents()
-
-    --[[if IsInGuild() then
-        local numMembers = GetNumGuildMembers()
-
-        for i = 1, numMembers do
-            local name, _, _, level, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
-            guildMembers[guid].name = name
-            guildMembers[guid].level = level
-        end
-    end]]
 end
 
 
@@ -104,15 +96,25 @@ function GoonTools:GUILD_ROSTER_UPDATE()
         -- Check members if they leveled up
         self:CheckLevelUp()
 
-        -- Broadcast registration
-        self:SendCommMessage(
-            "GT_REG",
-            self.playerGUID,
-            "GUILD"
-        )
+        if registeredComms and registeredEvents then
+            -- Broadcast registration
+            self:SendCommMessage(
+                "GT_REG",
+                self.playerGUID,
+                "GUILD"
+            )
+        else
+            self:RegisterCommsDeferred()
+        end
     else
         self:InitializeRoster()
     end
+end
+
+
+function GoonTools:RegisterCommsDeferred()
+    -- TODO: Why is this not registered when a player has just joined a guild?
+    self:RegisterComm("GT_REG", "OnGoonToolsRegister")
 end
 
 
@@ -137,9 +139,6 @@ function GoonTools:CreateGuildEvents()
         self:Print("CreateGuildEvents")
 
         self:RegisterEvent("GUILD_ROSTER_UPDATE")
-
-        -- TODO: Why is this not registered when a player has just joined a guild?
-        self:RegisterComm("GT_REG", "OnGoonToolsRegister")
 
         registeredEvents = true
     end
