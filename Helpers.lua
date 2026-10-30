@@ -45,14 +45,3 @@ function FormatMessage(template, values)
         return tostring(values[key] or "%" .. key)
     end))
 end
-
-
-function RandomMessage(category, values)
-    local options = guildMessages[category]
-
-    if not options or #options == 0 then
-        return nil
-    end
-
-    return self:FormatMessage(options[math.random(#options)], values)
-end

@@ -65,8 +65,21 @@ function GoonTools:HandleZoneNames(zone)
 end
 
 
+function GoonTools:RandomMessage(category, values)
+    local options = self.guildMessages[category]
+
+    if not options or #options == 0 then
+        self.Print(category .. values)
+
+        return ""
+    end
+
+    return FormatMessage(options[math.random(#options)], values)
+end
+
+
 function GoonTools:InitializeRoster()
-    local numMembers = GetNumGuildMembers()
+    local numMembers, _ = GetNumGuildMembers()
 
     if numMembers == 0 then -- TODO: why does this happen at first login?
         return
@@ -80,7 +93,7 @@ function GoonTools:InitializeRoster()
             self:HandleZoneNames(zone)
         end
 
-        if guid  then
+        if guid and (level > 0) then
             self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone)
         end
     end
@@ -91,39 +104,72 @@ end
 
 function GoonTools:UpdateGuildRoster()
     self:Print("UpdateGuildRoster")
+
+    local numMembers, _ = GetNumGuildMembers()
+
+    for i = 1, numMembers do
+        local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+
+        -- TODO: this just collects, unknown, zone names for now.
+        if zone then
+            self:HandleZoneNames(zone)
+        end
+
+        if guid and (level > 0) then
+            if not self.guildMembers[guid] then
+                -- A new guild member to be added!
+                self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone)
+
+                if not GoonTools:GetGratzGuild() then
+                    return
+                end
+
+                C_ChatInfo.SendChatMessage(self:RandomMessage("joined", { n = name }), "GUILD")
+            else
+                -- Update guild member name/zone/isOnline
+                if guildMembers[guid].name ~= name then
+                    guildMembers[guid].name = name
+                end
+
+                if guildMembers[guid].zone ~= zone then
+                    guildMembers[guid].zone = zone
+                end
+
+                if guildMembers[guid].online ~= isOnline then
+                    guildMembers[guid].online = isOnline
+                end
+            end
+        end
+    end
 end
 
 
 function GoonTools:CheckLevelUp()
     self:Print("CheckLevelUp")
 
-    --[[
-    if not GoonTools:GetGratzGuild() then
-        return
-    end
-
     local numMembers = GetNumGuildMembers()
 
     for i = 1, numMembers do
         local name, _, _, level, _, _, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
-        local previousLevel = guildMembers[guid]
 
         if isOnline then
-            if previousLevel then
-                if level > previousLevel then
-                    self:Print("Dinged: " .. name .. " " .. previousLevel .. " " .. level .. " " .. tostring(isOnline))
+            if guid and (level > 0) then
+                local previousLevel = self.guildMembers[guid].level
 
-                    if not UnitIsPlayer(name) then
-                        C_ChatInfo.SendChatMessage("Grats " .. name .. "!", "GUILD")
+                if level > previousLevel then
+                    self.guildMembers[guid].level = level
+
+                    if not GoonTools:GetGratzGuild() then
+                        return
                     end
 
-                    guildMembers[guid] = level
+                    if guid == self.playerGUID then
+                        C_ChatInfo.SendChatMessage("Ding, level " .. level .. "!", "GUILD")
+                    else
+                        C_ChatInfo.SendChatMessage(self:RandomMessage("levelUp", {n = name, l = level}), "GUILD")
+                    end
                 end
-            else
-                self:Print("Adding: " .. name .. " " .. " " .. level .. " " .. tostring(isOnline))
-
-                guildMembers[guid] = level
             end
         end
-    end]]
+    end
 end
