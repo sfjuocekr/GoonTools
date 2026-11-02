@@ -19,6 +19,7 @@ function GoonTools:PLAYER_LEVEL_UP(_, level)
         return
     end
 
+    -- Two seconds seems to capture the level up banner!
     C_Timer.After(2, function()
         Screenshot()
     end)
