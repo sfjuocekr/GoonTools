@@ -2,7 +2,8 @@
 ## Title: GoonTools
 ## Notes: Goon Squad approved useless additions
 ## Author: sfjuocekr
-## Version: 0.0.1
+## Version: 0.0.2
+## IconTexture: 136235
 ## SavedVariables: GoonToolsDB
 
 embeds.xml
