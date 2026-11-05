@@ -15,7 +15,7 @@ GoonTools.inviteKeywords = {
 GoonTools.guildMessages = {
     joined = {
         "%n just joined the guild!",
-        "%n has joined the guild",
+        "%n has joined the guild!",
         "%n weclome to the guild!",
         "Welcome to the guild %n!",
         "Everyone say hello to our newest member %n!",
@@ -158,7 +158,7 @@ function GoonTools:CheckLevelUp()
             if guid and (level > 0) then
                 local previousLevel = self.guildMembers[guid].level
 
-                if level > previousLevel then
+                if level > previousLevel and level % 10 == 0 then
                     self.guildMembers[guid].level = level
 
                     if not GoonTools:GetGratzGuild() then
