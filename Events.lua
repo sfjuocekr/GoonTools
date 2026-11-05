@@ -6,7 +6,7 @@ local registeredComms = false
 
 
 function GoonTools:PLAYER_LOGIN()
-    self:UnregisterEvent("PLAYER_LOGIN")
+    --self:UnregisterEvent("PLAYER_LOGIN")
 
     self.playerGUID = UnitGUID("player")
 
@@ -77,14 +77,14 @@ end
 
 
 function GoonTools:PLAYER_GUILD_UPDATE()
-    self:Print("PLAYER_GUILD_UPDATE")
+    --self:Print("PLAYER_GUILD_UPDATE")
 
     self:SetupGoonToolsEvents()
 end
 
 
 function GoonTools:GUILD_ROSTER_UPDATE()
-    self:Print("GUILD_ROSTER_UPDATE: " .. tostring(self.rosterInitialized))
+    --self:Print("GUILD_ROSTER_UPDATE: " .. tostring(self.rosterInitialized))
 
     if IsRestricted() then
         return
@@ -120,7 +120,7 @@ end
 
 
 function GoonTools:SetupGoonToolsEvents()
-    self:Print("SetupGoonToolsEvents:" .. tostring(IsInGuild()))
+    --self:Print("SetupGoonToolsEvents:" .. tostring(IsInGuild()))
 
     self:RegisterEvent("PLAYER_GUILD_UPDATE")
     self:RegisterEvent("PARTY_INVITE_REQUEST")
@@ -137,7 +137,7 @@ end
 
 function GoonTools:CreateGuildEvents()
     if not registeredEvents then
-        self:Print("CreateGuildEvents")
+        --self:Print("CreateGuildEvents")
 
         self:RegisterEvent("GUILD_ROSTER_UPDATE")
 
@@ -148,7 +148,7 @@ end
 
 function GoonTools:DestroyGuildEvents()
     if registeredEvents then
-        self:Print("DestroyGuildEvents")
+        --self:Print("DestroyGuildEvents")
 
         self:UnregisterEvent("GUILD_ROSTER_UPDATE")
 
@@ -160,7 +160,7 @@ end
 
 
 function GoonTools:OnCommReceived(...)
-    self:Print("OnCommReceived")
+    --self:Print("OnCommReceived")
 
     for i = 1, select("#", ...) do
         local value = select(i, ...)
@@ -170,7 +170,7 @@ end
 
 
 function GoonTools:OnGoonToolsRegister(_, guid)
-    self:Print("OnGoonToolsRegister")
+    --self:Print("OnGoonToolsRegister")
 
     if guid and self.rosterInitialized then
         self.guildMembers[guid].addon = true

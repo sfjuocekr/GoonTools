@@ -38,7 +38,7 @@ GoonTools.playerGUID = nil
 
 
 function GoonTools:OnInitialize()
-    self:Print("OnInitialize")
+    ---self:Print("OnInitialize")
 
     GoonTools:InitializeUI()
 
@@ -103,7 +103,7 @@ end
 
 
 function GoonTools:UpdateGuildRoster()
-    self:Print("UpdateGuildRoster")
+    --self:Print("UpdateGuildRoster")
 
     local numMembers, _ = GetNumGuildMembers()
 
@@ -117,6 +117,7 @@ function GoonTools:UpdateGuildRoster()
 
         if guid and (level > 0) then
             if not self.guildMembers[guid] then
+                --self:Print("NewMember!")
                 -- A new guild member to be added!
                 self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone)
 
@@ -126,17 +127,18 @@ function GoonTools:UpdateGuildRoster()
 
                 C_ChatInfo.SendChatMessage(self:RandomMessage("joined", { n = name }), "GUILD")
             else
+                ---self:Print("OldMember!")
                 -- Update guild member name/zone/isOnline
-                if guildMembers[guid].name ~= name then
-                    guildMembers[guid].name = name
+                if self.guildMembers[guid].name ~= name then
+                    self.guildMembers[guid].name = name
                 end
 
-                if guildMembers[guid].zone ~= zone then
-                    guildMembers[guid].zone = zone
+                if self.guildMembers[guid].zone ~= zone then
+                    self.guildMembers[guid].zone = zone
                 end
 
-                if guildMembers[guid].online ~= isOnline then
-                    guildMembers[guid].online = isOnline
+                if self.guildMembers[guid].online ~= isOnline then
+                    self.guildMembers[guid].online = isOnline
                 end
             end
         end
@@ -145,7 +147,7 @@ end
 
 
 function GoonTools:CheckLevelUp()
-    self:Print("CheckLevelUp")
+    --self:Print("CheckLevelUp")
 
     local numMembers = GetNumGuildMembers()
 
