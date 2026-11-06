@@ -172,7 +172,7 @@ end
 function GoonTools:OnGoonToolsRegister(_, guid)
     --self:Print("OnGoonToolsRegister")
 
-    if guid and self.rosterInitialized then
+    if guid and self.rosterInitialized and self.guildMembers[guid] then
         self.guildMembers[guid].addon = true
     end
 end
