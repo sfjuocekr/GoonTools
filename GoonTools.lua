@@ -16,7 +16,7 @@ GoonTools.guildMessages = {
     joined = {
         "%n just joined the guild!",
         "%n has joined the guild!",
-        "%n weclome to the guild!",
+        "%n welcome to the guild!",
         "Welcome to the guild %n!",
         "Everyone say hello to our newest member %n!",
     },
