@@ -31,10 +31,10 @@ GoonTools.guildMessages = {
 }
 
 
-GoonTools.guildMembers = {}
-GoonTools.rosterInitialized = false
-GoonTools.zoneNames = nil
 GoonTools.playerGUID = nil
+GoonTools.guildMembers = {}
+GoonTools.zoneNames = {}
+GoonTools.rosterInitialized = false
 
 
 function GoonTools:OnInitialize()
@@ -49,19 +49,6 @@ end
 function GoonTools:HandleSlashCommand(input)
     -- Handle possible commands fed to /gt
     self:Print(input)
-end
-
-
-function GoonTools:HandleZoneNames(zone)
-    if not zone or zone == "" then
-        return 0
-    end
-
-    if self.zoneNames[zone] == nil then
-        self.zoneNames[zone] = 0
-    end
-
-    return self.zoneNames[zone]
 end
 
 
@@ -88,13 +75,8 @@ function GoonTools:InitializeRoster()
     for i = 1, numMembers do
         local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
 
-        -- TODO: this just collects, unknown, zone names for now.
-        if zone then
-            self:HandleZoneNames(zone)
-        end
-
         if guid and (level > 0) then
-            self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone)
+            self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone, self:GenerateGoonStone(guid))
         end
     end
 
@@ -110,11 +92,6 @@ function GoonTools:UpdateGuildRoster()
     for i = 1, numMembers do
         local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
 
-        -- TODO: this just collects, unknown, zone names for now.
-        if zone then
-            self:HandleZoneNames(zone)
-        end
-
         if guid and (level > 0) then
             if not self.guildMembers[guid] then
                 --self:Print("NewMember!")
@@ -125,7 +102,14 @@ function GoonTools:UpdateGuildRoster()
                     return
                 end
 
-                C_ChatInfo.SendChatMessage(self:RandomMessage("joined", { n = name }), "GUILD")
+                -- TODO: Whisper a new member their GoonStone
+                self:Print(guid .. ": " .. name)
+                local goonStone = self:GenerateGoonStone(guid)
+
+                C_ChatInfo.SendChatMessage(name .. ": " .. tostring(goonStone), "WHISPER", nil, "Dokter Kwakzalver")
+
+                -- NO SPAM IN GUILD CHAT :(
+                --C_ChatInfo.SendChatMessage(self:RandomMessage("joined", { n = name }), "GUILD")
             else
                 ---self:Print("OldMember!")
                 -- Update guild member name/zone/isOnline

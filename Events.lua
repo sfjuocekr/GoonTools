@@ -54,6 +54,12 @@ function GoonTools:CHAT_MSG_WHISPER(_, text, playerName, _, _, _, _, _, _, _, _,
         return
     end
 
+    if MatchKeyword("!goonstone", text) then
+        self:SendGoonStone(playerName)
+
+        return
+    end
+
     if not GoonTools:GetWhisperInvite() then
         return
     end
@@ -86,13 +92,15 @@ end
 function GoonTools:GUILD_ROSTER_UPDATE()
     --self:Print("GUILD_ROSTER_UPDATE: " .. tostring(self.rosterInitialized))
 
-    if IsRestricted() then
-        return
-    end
-
     if self.rosterInitialized then
+        if IsRestricted() then
+            return
+        end
+
         -- Check roster for changes, defer updating levels.
         self:UpdateGuildRoster()
+
+        -- TODO: Do something here with the zones, helper function to count goons in a zone for example.
 
         -- Check members if they leveled up
         self:CheckLevelUp()
@@ -113,9 +121,21 @@ function GoonTools:GUILD_ROSTER_UPDATE()
 end
 
 
+function GoonTools:CHAT_MSG_GUILD(_, text, playerName)
+    if issecretvalue(text) or issecretvalue(playerName) or IsRestricted() then
+        return
+    else
+        --self:HandleGuildMessage(text, playerName)
+
+        self:HandleGuildMessage(text, playerName)
+    end
+end
+
 function GoonTools:RegisterCommsDeferred()
     -- TODO: Why is this not registered when a player has just joined a guild?
     self:RegisterComm("GT_REG", "OnGoonToolsRegister")
+
+    registeredComms = true
 end
 
 
@@ -140,6 +160,7 @@ function GoonTools:CreateGuildEvents()
         --self:Print("CreateGuildEvents")
 
         self:RegisterEvent("GUILD_ROSTER_UPDATE")
+        self:RegisterEvent("CHAT_MSG_GUILD")
 
         registeredEvents = true
     end
@@ -151,6 +172,7 @@ function GoonTools:DestroyGuildEvents()
         --self:Print("DestroyGuildEvents")
 
         self:UnregisterEvent("GUILD_ROSTER_UPDATE")
+        self:UnregisterEvent("CHAT_MSG_GUILD")
 
         self:UnregisterComm("GT_REG")
 

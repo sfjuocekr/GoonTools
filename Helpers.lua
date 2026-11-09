@@ -29,12 +29,13 @@ function MatchKeyword(keyword, message)
 end
 
 
-function CreateGuildMember(isOnline, name, level, zone)
+function CreateGuildMember(isOnline, name, level, zone, goonStone)
     return {
         online = isOnline,
         name = name,
         level = level,
         zone = zone,
+        goonStone = goonStone,
         addon = false,
     }
 end
