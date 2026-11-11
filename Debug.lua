@@ -22,7 +22,19 @@ end
 
 
 function GoonTools:DumpZones()
-    for k, v in pairs(self.zoneNames) do
+    for k, v in pairs(self.db.global.zoneNames) do
+        if not v.id then
+            v.id = 0
+        end
+
+        if not v.temperature then
+            v.temperature = 0
+        end
+
+        if not v.goons then
+            v.goons = 0
+        end
+
         self:Print(k .. " " .. v.id .. " " .. v.temperature .. " " .. v.goons)
     end
 end
@@ -38,6 +50,8 @@ end
 
 
 function GoonTools:DumpZoneID(value)
+    value = tonumber(value)
+
     local maps = C_Map.GetMapChildrenInfo(
         value,
         Enum.UIMapType.Zone,
@@ -45,10 +59,10 @@ function GoonTools:DumpZoneID(value)
     )
 
     for _, map in ipairs(maps) do
-        self.zoneNames[map.name] = {}
-        self.zoneNames[map.name].id = map.mapID
-        self.zoneNames[map.name].temperature = 0
-        self.zoneNames[map.name].goons = 0
+        self.db.global.zoneNames[map.name] = {}
+        self.db.global.zoneNames[map.name].id = map.mapID
+        self.db.global.zoneNames[map.name].temperature = 0
+        self.db.global.zoneNames[map.name].goons = 0
 
         self:Print(map.name .. " " .. map.mapID)
     end

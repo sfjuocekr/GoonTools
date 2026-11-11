@@ -30,13 +30,13 @@ function GoonTools:HandleZoneTemperature(zone)
         return 0
     end
 
-    if self.zoneNames[zone].temperature == nil then
+    if self.db.global.zoneNames[zone].temperature == nil then
         self:Print("Zone temperature not set: " .. zone)
 
         return 0
     end
 
-    return self.zoneNames[zone].temperature
+    return self.db.global.zoneNames[zone].temperature
 end
 
 
@@ -47,13 +47,13 @@ function GoonTools:HandleZoneGoons(zone)
         return 0
     end
 
-    if self.zoneNames[zone].goons == nil then
+    if self.db.global.zoneNames[zone].goons == nil then
         self:Print("Zone goons not set: " .. zone)
 
         return 0
     end
 
-    return self.zoneNames[zone].goons
+    return self.db.global.zoneNames[zone].goons
 end
 
 
@@ -70,10 +70,11 @@ function GoonTools:HandleGuildMessage(text, playerName)
         return
     end
 
-    self:SendGoonStone(playerName)
+    self:SendGoonStone(playerName, "report")
 end
 
-function GoonTools:SendGoonStone(playerName)
+
+function GoonTools:SendGoonStone(playerName, type)
     for guid, member in pairs(self.guildMembers) do
         if member.name == playerName then
             local goonStone = self:AugmentGoonStone(member.goonStone, member.level, member.zone)
@@ -82,7 +83,18 @@ function GoonTools:SendGoonStone(playerName)
                 self:Print(goonStone)
                 --C_ChatInfo.SendChatMessage("My pecker is size " .. pecker .. "!", "GUILD")
             else
-                C_ChatInfo.SendChatMessage("The council has rated your stone: " .. goonStone, "WHISPER", nil, playerName)
+                if type == "report" then
+                    C_ChatInfo.SendChatMessage("The council has rated your stone score: " .. goonStone, "WHISPER", nil,
+                    playerName)
+                end
+
+                if type == "new" then
+                    C_ChatInfo.SendChatMessage("Welcome to the guild, your stone has been rated by the council and scored: " .. goonStone, "WHISPER", nil, playerName)
+                    --self:Print(guid .. ": " .. name .. " " .. goonStone)
+                    --local goonStone = self:GenerateGoonStone(guid)
+                    --self:AugmentGoonStone(member.goonStone, member.level, member.zone)
+                    --C_ChatInfo.SendChatMessage(name .. ": " .. tostring(goonStone), "WHISPER", nil, "Dokter Kwakzalver")
+                end
                 --C_ChatInfo.SendChatMessage(self:RandomMessage("pecker", {n = member.name, p = pecker}), "GUILD")
             end
 
@@ -90,3 +102,4 @@ function GoonTools:SendGoonStone(playerName)
         end
     end
 end
+

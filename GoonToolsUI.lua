@@ -202,7 +202,7 @@ function GoonTools:InitializeUI()
         "GoonTools"
     )
 
-    self.zoneNames = self.db.global.zoneNames
+    --self.zoneNames = self.db.global.zoneNames
 end
 
 

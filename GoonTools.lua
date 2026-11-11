@@ -33,7 +33,6 @@ GoonTools.guildMessages = {
 
 GoonTools.playerGUID = nil
 GoonTools.guildMembers = {}
-GoonTools.zoneNames = {}
 GoonTools.rosterInitialized = false
 
 
@@ -92,22 +91,28 @@ function GoonTools:UpdateGuildRoster()
     for i = 1, numMembers do
         local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
 
+        if self.db.global.zoneNames[zone] == nil and zone then
+            self.db.global.zoneNames[zone] = {}
+            self.db.global.zoneNames[zone].id = 0
+            self.db.global.zoneNames[zone].temperature = 0
+            self.db.global.zoneNames[zone].goons = 0
+        end
+
         if guid and (level > 0) then
             if not self.guildMembers[guid] then
                 --self:Print("NewMember!")
                 -- A new guild member to be added!
-                self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone)
+                local goonStone = self:GenerateGoonStone(guid)
+                --local goonStone = self:AugmentGoonStone(baseStone, level, zone)
+
+                self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone, goonStone)
 
                 if not GoonTools:GetGratzGuild() then
                     return
                 end
 
                 -- TODO: Whisper a new member their GoonStone
-                self:Print(guid .. ": " .. name)
-                local goonStone = self:GenerateGoonStone(guid)
-
-                C_ChatInfo.SendChatMessage(name .. ": " .. tostring(goonStone), "WHISPER", nil, "Dokter Kwakzalver")
-
+                self:SendGoonStone(name, "new")
                 -- NO SPAM IN GUILD CHAT :(
                 --C_ChatInfo.SendChatMessage(self:RandomMessage("joined", { n = name }), "GUILD")
             else
@@ -136,7 +141,7 @@ function GoonTools:CheckLevelUp()
     local numMembers = GetNumGuildMembers()
 
     for i = 1, numMembers do
-        local name, _, _, level, _, _, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+        local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
 
         if isOnline then
             if guid and (level > 0) then
@@ -149,10 +154,13 @@ function GoonTools:CheckLevelUp()
                         return
                     end
 
+                    local goonStone = self:AugmentGoonStone(self.guildMembers[guid].goonStone, level, zone)
+
                     if guid == self.playerGUID then
                         C_ChatInfo.SendChatMessage("Ding, level " .. level .. "!", "GUILD")
                     else
-                        C_ChatInfo.SendChatMessage(self:RandomMessage("levelUp", {n = name, l = level}), "GUILD")
+                        C_ChatInfo.SendChatMessage(self:RandomMessage("levelUp", { n = name, l = level }), "GUILD")
+                        C_ChatInfo.SendChatMessage("The light touched your stone and now it ranks a " .. goonStone, "WHISPER", nil, name)
                     end
                 end
             end
