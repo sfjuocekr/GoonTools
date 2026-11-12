@@ -26,10 +26,12 @@ function GoonTools:PLAYER_LEVEL_UP(_, level)
 end
 
 
-function GoonTools:PARTY_INVITE_REQUEST(_, name, _, _, _, _, _, inviterGUID)
+function GoonTools:PARTY_INVITE_REQUEST(_, name, isTank, isHealer, isDamage, isNativeRealm, allowMultipleRoles, questSessionActive, inviterGUID)
     if not GoonTools:GetPartyInvite() then
         return
     end
+
+    self:Print(name .. ": " .. tostring(inviterGUID))
 
     if not IsGuildMember(inviterGUID) and self:GetGuildPartyInvite() then
         return
