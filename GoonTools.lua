@@ -34,6 +34,8 @@ GoonTools.guildMessages = {
 GoonTools.playerGUID = nil
 GoonTools.guildMembers = {}
 GoonTools.rosterInitialized = false
+GoonTools.eventsRegistered = false
+GoonTools.commsRegistered = false
 
 
 function GoonTools:OnInitialize()
@@ -55,7 +57,7 @@ function GoonTools:RandomMessage(category, values)
     local options = self.guildMessages[category]
 
     if not options or #options == 0 then
-        self.Print(category .. values)
+        self:Print("Unknown category: " .. tostring(category))
 
         return ""
     end

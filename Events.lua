@@ -1,9 +1,6 @@
 local GoonTools = LibStub("AceAddon-3.0"):GetAddon("GoonTools")
 
 
-local registeredEvents = false
-local registeredComms = false
-
 
 function GoonTools:PLAYER_LOGIN()
     --self:UnregisterEvent("PLAYER_LOGIN")
@@ -107,7 +104,7 @@ function GoonTools:GUILD_ROSTER_UPDATE()
         -- Check members if they leveled up
         self:CheckLevelUp()
 
-        if registeredComms and registeredEvents then
+        if GoonTools.commsRegistered and GoonTools.eventsRegistered then
             -- Broadcast registration
             self:SendCommMessage(
                 "GT_REG",
@@ -137,7 +134,7 @@ function GoonTools:RegisterCommsDeferred()
     -- TODO: Why is this not registered when a player has just joined a guild?
     self:RegisterComm("GT_REG", "OnGoonToolsRegister")
 
-    registeredComms = true
+    GoonTools.commsRegistered = true
 end
 
 
@@ -158,19 +155,19 @@ end
 
 
 function GoonTools:CreateGuildEvents()
-    if not registeredEvents then
+    if not GoonTools.eventsRegistered then
         --self:Print("CreateGuildEvents")
 
         self:RegisterEvent("GUILD_ROSTER_UPDATE")
         self:RegisterEvent("CHAT_MSG_GUILD")
 
-        registeredEvents = true
+        GoonTools.eventsRegistered = true
     end
 end
 
 
 function GoonTools:DestroyGuildEvents()
-    if registeredEvents then
+    if GoonTools.eventsRegistered then
         --self:Print("DestroyGuildEvents")
 
         self:UnregisterEvent("GUILD_ROSTER_UPDATE")
@@ -178,7 +175,7 @@ function GoonTools:DestroyGuildEvents()
 
         self:UnregisterComm("GT_REG")
 
-        registeredEvents = false
+        GoonTools.eventsRegistered = false
     end
 end
 
