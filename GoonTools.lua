@@ -57,7 +57,7 @@ function GoonTools:RandomMessage(category, values)
     local options = self.guildMessages[category]
 
     if not options or #options == 0 then
-        self:Print("Unknown category: " .. tostring(category))
+        self:Print(category .. " " .. tostring(values))
 
         return ""
     end
