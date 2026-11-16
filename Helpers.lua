@@ -41,6 +41,19 @@ function CreateGuildMember(isOnline, name, level, zone, goonStone)
 end
 
 
+function GetGuildRosterEntry(index)
+    local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(index)
+
+    return {
+        name = name,
+        level = level,
+        zone = zone,
+        online = isOnline,
+        guid = guid,
+    }
+end
+
+
 function FormatMessage(template, values)
     return (template:gsub("%%([a-z])", function(key)
         return tostring(values[key] or "%" .. key)

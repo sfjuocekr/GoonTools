@@ -72,10 +72,11 @@ function GoonTools:InitializeRoster()
     end
 
     for i = 1, numMembers do
-        local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+        local entry = GetGuildRosterEntry(i)
 
-        if guid and (level > 0) then
-            self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone, self:GenerateGoonStone(guid))
+        if entry.guid and entry.level > 0 then
+            self.guildMembers[entry.guid] = CreateGuildMember(entry.online, entry.name, entry.level,
+                entry.zone, self:GenerateGoonStone(entry.guid))
         end
     end
 
@@ -89,45 +90,47 @@ function GoonTools:UpdateGuildRoster()
     local numMembers, _ = GetNumGuildMembers()
 
     for i = 1, numMembers do
-        local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+        local entry = GetGuildRosterEntry(i)
 
-        if self.db.global.zoneNames[zone] == nil and zone then
-            self.db.global.zoneNames[zone] = {}
-            self.db.global.zoneNames[zone].id = 0
-            self.db.global.zoneNames[zone].temperature = 0
-            self.db.global.zoneNames[zone].goons = 0
+        if self.db.global.zoneNames[entry.zone] == nil and entry.zone then
+            self.db.global.zoneNames[entry.zone] = {
+                id = 0,
+                temperature = 0,
+                goons = 0
+            }
         end
 
-        if guid and (level > 0) then
-            if not self.guildMembers[guid] then
+        if entry.guid and entry.level > 0 then
+            if not self.guildMembers[entry.guid] then
                 --self:Print("NewMember!")
                 -- A new guild member to be added!
-                local goonStone = self:GenerateGoonStone(guid)
+                local goonStone = self:GenerateGoonStone(entry.guid)
                 --local goonStone = self:AugmentGoonStone(baseStone, level, zone)
 
-                self.guildMembers[guid] = CreateGuildMember(isOnline, name, level, zone, goonStone)
+                self.guildMembers[entry.guid] = CreateGuildMember(entry.online, entry.name, entry.level,
+                    entry.zone, goonStone)
 
                 if not GoonTools:GetGratzGuild() then
                     return
                 end
 
                 -- TODO: Whisper a new member their GoonStone
-                self:SendGoonStone(name, "new")
+                self:SendGoonStone(entry.name, "new")
                 -- NO SPAM IN GUILD CHAT :(
-                --C_ChatInfo.SendChatMessage(self:RandomMessage("joined", { n = name }), "GUILD")
+                --C_ChatInfo.SendChatMessage(self:RandomMessage("joined", { n = entry.name }), "GUILD")
             else
                 ---self:Print("OldMember!")
                 -- Update guild member name/zone/isOnline
-                if self.guildMembers[guid].name ~= name then
-                    self.guildMembers[guid].name = name
+                if self.guildMembers[entry.guid].name ~= entry.name then
+                    self.guildMembers[entry.guid].name = entry.name
                 end
 
-                if self.guildMembers[guid].zone ~= zone then
-                    self.guildMembers[guid].zone = zone
+                if self.guildMembers[entry.guid].zone ~= entry.zone then
+                    self.guildMembers[entry.guid].zone = entry.zone
                 end
 
-                if self.guildMembers[guid].online ~= isOnline then
-                    self.guildMembers[guid].online = isOnline
+                if self.guildMembers[entry.guid].online ~= entry.online then
+                    self.guildMembers[entry.guid].online = entry.online
                 end
             end
         end
@@ -141,26 +144,29 @@ function GoonTools:CheckLevelUp()
     local numMembers = GetNumGuildMembers()
 
     for i = 1, numMembers do
-        local name, _, _, level, _, zone, _, _, isOnline, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
+        local entry = GetGuildRosterEntry(i)
 
-        if isOnline then
-            if guid and (level > 0) then
-                local previousLevel = self.guildMembers[guid].level
+        if entry.online then
+            if entry.guid and entry.level > 0 then
+                local previousLevel = self.guildMembers[entry.guid].level
 
-                if level > previousLevel and level % 10 == 0 then
-                    self.guildMembers[guid].level = level
+                if entry.level > previousLevel and entry.level % 10 == 0 then
+                    self.guildMembers[entry.guid].level = entry.level
 
                     if not GoonTools:GetGratzGuild() then
                         return
                     end
 
-                    local goonStone = self:AugmentGoonStone(self.guildMembers[guid].goonStone, level, zone)
+                    local goonStone = self:AugmentGoonStone(self.guildMembers[entry.guid].goonStone,
+                        entry.level, entry.zone)
 
-                    if guid == self.playerGUID then
-                        C_ChatInfo.SendChatMessage("Ding, level " .. level .. "!", "GUILD")
+                    if entry.guid == self.playerGUID then
+                        C_ChatInfo.SendChatMessage("Ding, level " .. entry.level .. "!", "GUILD")
                     else
-                        C_ChatInfo.SendChatMessage(self:RandomMessage("levelUp", { n = name, l = level }), "GUILD")
-                        C_ChatInfo.SendChatMessage("The light touched your stone and now it ranks a " .. goonStone, "WHISPER", nil, name)
+                        C_ChatInfo.SendChatMessage(self:RandomMessage("levelUp", { n = entry.name, l = entry.level }),
+                            "GUILD")
+                        C_ChatInfo.SendChatMessage("The light touched your stone and now it ranks a " .. goonStone,
+                            "WHISPER", nil, entry.name)
                     end
                 end
             end
