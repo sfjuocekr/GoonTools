@@ -130,56 +130,14 @@ local options = {
 }
 
 
-function GoonTools:GetDingScreenshot()
-    return self.db.profile.dingScreenshot
-end
-
-function GoonTools:SetDingScreenshot(value)
-    self.db.profile.dingScreenshot = value
-end
-
-
-function GoonTools:GetGratzGuild()
-    return self.db.profile.gratzGuild
-end
-
-function GoonTools:SetGratzGuild(value)
-    self.db.profile.gratzGuild = value
-end
-
-
-function GoonTools:GetPartyInvite()
-    return self.db.profile.partyInvite
-end
-
-function GoonTools:SetPartyInvite(value)
-    self.db.profile.partyInvite = value
-end
-
-function GoonTools:GetGuildPartyInvite()
-    return self.db.profile.guildPartyInvite
-end
-
-function GoonTools:SetGuildPartyInvite(value)
-    self.db.profile.guildPartyInvite = value
-end
-
-
-function GoonTools:GetWhisperInvite()
-    return self.db.profile.whisperInvite
-end
-
-function GoonTools:SetWhisperInvite(value)
-    self.db.profile.whisperInvite = value
-end
-
-function GoonTools:GetGuildWhisperInvite()
-    return self.db.profile.guildWhisperInvite
-end
-
-function GoonTools:SetGuildWhisperInvite(value)
-    self.db.profile.guildWhisperInvite = value
-end
+local DEFAULT_PROFILE_KEYS = {
+    "dingScreenshot",
+    "gratzGuild",
+    "partyInvite",
+    "guildPartyInvite",
+    "whisperInvite",
+    "guildWhisperInvite",
+}
 
 
 function GoonTools:InitializeUI()
@@ -201,6 +159,10 @@ function GoonTools:InitializeUI()
         "GoonTools Configuration",
         "GoonTools"
     )
+
+    for _, name in ipairs(DEFAULT_PROFILE_KEYS) do
+        AddGetSetters(GoonTools, name)
+    end
 
     --self.zoneNames = self.db.global.zoneNames
 end

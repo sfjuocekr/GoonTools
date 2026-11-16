@@ -59,3 +59,16 @@ function FormatMessage(template, values)
         return tostring(values[key] or "%" .. key)
     end))
 end
+
+
+function AddGetSetters(setter, name)
+    local capitalized = name:sub(1, 1):upper() .. name:sub(2)
+
+    GoonTools["Get" .. capitalized] = function(self)
+        return self.db.profile[name]
+    end
+
+    GoonTools["Set" .. capitalized] = function(_, value)
+        setter.db.profile[name] = value
+    end
+end

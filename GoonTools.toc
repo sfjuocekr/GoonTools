@@ -9,8 +9,8 @@
 embeds.xml
 
 GoonTools.lua
+Helpers.lua
 GoonToolsUI.lua
 GoonStone.lua
 Events.lua
 Debug.lua
-Helpers.lua
