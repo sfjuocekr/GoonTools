@@ -22,6 +22,8 @@ function MatchKeyword(keyword, message)
     if message ~= nil then
         if not (message:lower():match("^%s*" .. keyword .. "%s*$") == nil) then
             return true
+        else
+            return false
         end
     end
 

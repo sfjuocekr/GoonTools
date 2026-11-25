@@ -54,7 +54,7 @@ function GoonTools:CHAT_MSG_WHISPER(_, text, playerName, _, _, _, _, _, _, _, _,
     end
 
     if MatchKeyword("!goonstone", text) then
-        self:SendGoonStone(playerName)
+        self:SendGoonStone(playerName, "report")
 
         return
     end
