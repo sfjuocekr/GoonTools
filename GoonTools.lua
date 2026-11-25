@@ -44,6 +44,12 @@ function GoonTools:OnInitialize()
     GoonTools:InitializeUI()
 
     self:RegisterEvent("PLAYER_LOGIN")
+
+    C_Timer.NewTicker(1, function()
+        if IsInGuild() then
+            C_GuildInfo.GuildRoster()
+        end
+    end)
 end
 
 
